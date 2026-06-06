@@ -11,6 +11,7 @@ import './styles/components.css';
 import './styles/auth.css';
 import './styles/dashboard.css';
 import './styles/profile.css';
+import './styles/chat.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

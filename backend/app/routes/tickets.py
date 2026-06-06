@@ -7,6 +7,7 @@ from app.repositories import tickets_repo
 from app.schemas.ticket import (
     AdminReplyRequest,
     FeedbackRequest,
+    MessageRequest,
     TicketCreate,
     TicketDetailResponse,
     TicketListItem,
@@ -14,6 +15,7 @@ from app.schemas.ticket import (
 )
 from app.services.ticket_service import (
     add_admin_reply,
+    add_user_followup,
     create_ticket_with_ai,
     ticket_to_detail,
     update_ticket_status,
@@ -110,6 +112,25 @@ def update_ticket(
     if payload.status:
         ticket = update_ticket_status(db, ticket, payload.status, admin.id)
     log_action(db, f"Ticket #{ticket_id} updated by admin", admin.id)
+    return TicketDetailResponse(**ticket_to_detail(ticket, db))
+
+
+@router.post("/{ticket_id}/messages", response_model=TicketDetailResponse)
+def user_message(
+    ticket_id: int,
+    payload: MessageRequest,
+    user=Depends(get_current_user),
+    db: Database = Depends(get_db),
+):
+    ticket = tickets_repo.find_by_id(db, ticket_id)
+    if not ticket or ticket["user_id"] != user.id:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    if ticket.get("status") == "Resolved":
+        raise HTTPException(status_code=400, detail="This ticket is resolved. Open a new ticket for further help.")
+    try:
+        ticket = add_user_followup(db, ticket, payload.content.strip(), user.id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return TicketDetailResponse(**ticket_to_detail(ticket, db))
 
 

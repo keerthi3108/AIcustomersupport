@@ -110,9 +110,66 @@ def ticket_to_detail(ticket: dict, db: Database) -> dict:
             ticket.get("resolved_at"),
             ticket.get("sla_breached", False),
         ),
+        "sla_hours_remaining": _sla_hours_remaining(
+            ticket.get("sla_deadline"), ticket.get("resolved_at")
+        ),
         "resolution_hours": resolution_hours,
         "user_name": user["name"] if user else None,
     }
+
+
+def _sla_hours_remaining(deadline, resolved_at) -> float | None:
+    if resolved_at or not deadline:
+        return None
+    now = datetime.now(timezone.utc)
+    dl = _parse_dt(deadline)
+    if not dl:
+        return None
+    return round((dl - now).total_seconds() / 3600, 1)
+
+
+def _conversation_context(ticket: dict, latest_user_msg: str) -> str:
+    lines = [f"Subject: {ticket['title']}", f"Original issue: {ticket['description']}"]
+    for m in sorted(ticket.get("messages", []), key=lambda x: x.get("created_at") or ""):
+        role = {"user": "Customer", "ai": "AI", "admin": "Agent"}.get(m["sender"], m["sender"])
+        lines.append(f"{role}: {m['content'][:500]}")
+    lines.append(f"Customer (latest): {latest_user_msg}")
+    return "\n".join(lines)
+
+
+def add_user_followup(db: Database, ticket: dict, content: str, user_id: int) -> dict:
+    if ticket.get("status") == "Resolved":
+        raise ValueError("Cannot send messages on a resolved ticket")
+
+    ticket = tickets_repo.add_message(db, ticket["id"], "user", content)
+    ticket = tickets_repo.find_by_id(db, ticket["id"])
+
+    settings = get_settings()
+    store = get_chroma_store()
+    convo = _conversation_context(ticket, content)
+    chunks = store.query(convo, top_k=settings.rag_top_k, category=None)
+    relevant = [c for c in chunks if c["score"] >= 0.35]
+
+    ai_response = generate_grounded_response(ticket["title"], convo, relevant)
+    if ai_response:
+        tickets_repo.add_message(db, ticket["id"], "ai", ai_response)
+        tickets_repo.update(db, ticket["id"], {"ai_response": ai_response})
+        if relevant:
+            tickets_repo.add_sources(
+                db,
+                ticket["id"],
+                [
+                    {
+                        "filename": c["filename"],
+                        "chunk_preview": c["text"][:300],
+                        "relevance_score": c["score"],
+                    }
+                    for c in relevant
+                ],
+            )
+
+    log_action(db, f"User follow-up on ticket #{ticket['id']}", user_id)
+    return tickets_repo.find_by_id(db, ticket["id"])
 
 
 def add_admin_reply(db: Database, ticket: dict, content: str, admin_id: int) -> dict:

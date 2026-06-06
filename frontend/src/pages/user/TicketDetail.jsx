@@ -1,30 +1,57 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ticketApi } from '../../api/client';
+import AiSourcesAccordion from '../../components/AiSourcesAccordion';
 import StatusBadge from '../../components/StatusBadge';
+import TicketChat from '../../components/TicketChat';
 import { useToast } from '../../context/ToastContext';
 
-const SENDER_LABELS = {
-  user: 'Customer',
-  ai: 'AI Assistant',
-  admin: 'Support Agent',
-};
+function SlaAdminPanel({ ticket }) {
+  const hours = ticket.sla_hours_remaining;
+  const breached = ticket.sla_breached || (hours !== null && hours !== undefined && hours < 0);
+  const timeLabel =
+    hours === null || hours === undefined
+      ? '—'
+      : breached
+        ? `Overdue by ${Math.abs(hours).toFixed(1)}h`
+        : `${hours.toFixed(1)}h remaining`;
 
-function formatMessageContent(content) {
-  if (!content) return '';
-  return content.split('\n').map((line, i) => (
-    <span key={i}>
-      {line}
-      {i < content.split('\n').length - 1 && <br />}
-    </span>
-  ));
+  return (
+    <div className="sla-admin-panel">
+      <h4>SLA Tracking</h4>
+      <dl className="sla-dl">
+        <div>
+          <dt>Status</dt>
+          <dd>
+            <span className={`sla-pill ${breached ? 'sla-bad' : ticket.sla_status === 'At Risk' ? 'sla-warn' : 'sla-ok'}`}>
+              {ticket.sla_status}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>Deadline</dt>
+          <dd>{ticket.sla_deadline ? new Date(ticket.sla_deadline).toLocaleString() : '—'}</dd>
+        </div>
+        <div>
+          <dt>Time</dt>
+          <dd>{timeLabel}</dd>
+        </div>
+        {ticket.resolution_hours != null && (
+          <div>
+            <dt>Resolved in</dt>
+            <dd>{ticket.resolution_hours}h</dd>
+          </div>
+        )}
+      </dl>
+    </div>
+  );
 }
 
 export default function TicketDetail({ adminView = false }) {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
+  const [message, setMessage] = useState('');
   const [rating, setRating] = useState(5);
-  const [adminReply, setAdminReply] = useState('');
   const [sending, setSending] = useState(false);
   const { showToast } = useToast();
 
@@ -44,19 +71,18 @@ export default function TicketDetail({ adminView = false }) {
     }
   };
 
-  const handleAdminReply = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    const text = adminReply.trim();
-    if (text.length < 5) {
-      showToast('Reply must be at least 5 characters', 'error');
-      return;
-    }
+    const text = message.trim();
+    if (text.length < 2) return;
     setSending(true);
     try {
-      const updated = await ticketApi.reply(id, text);
+      const updated = adminView
+        ? await ticketApi.reply(id, text)
+        : await ticketApi.sendMessage(id, text);
       setTicket(updated);
-      setAdminReply('');
-      showToast('Reply sent to customer', 'success');
+      setMessage('');
+      showToast(adminView ? 'Reply sent' : 'Message sent', 'success');
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -74,19 +100,26 @@ export default function TicketDetail({ adminView = false }) {
     }
   };
 
-  if (!ticket) return <p className="muted pad">Loading ticket...</p>;
+  if (!ticket) return <p className="muted pad">Loading conversation...</p>;
+
+  const isResolved = ticket.status === 'Resolved';
+  const canReply = !isResolved;
 
   return (
-    <div className="page ticket-detail">
-      <header className="page-header">
+    <div className="page ticket-chat-page">
+      <header className="chat-page-header">
         <div>
-          <h1>#{ticket.id} {ticket.title}</h1>
+          <p className="chat-ticket-id">Ticket #{ticket.id}</p>
+          <h1>{ticket.title}</h1>
           <div className="badge-row">
             <StatusBadge value={ticket.status} />
             <StatusBadge value={ticket.priority} type="priority" />
-            <StatusBadge value={ticket.category} type="category" />
-            <StatusBadge value={ticket.sentiment} type="sentiment" />
-            <span className="sla-pill">{ticket.sla_status}</span>
+            {adminView && (
+              <>
+                <StatusBadge value={ticket.category} type="category" />
+                <StatusBadge value={ticket.sentiment} type="sentiment" />
+              </>
+            )}
           </div>
         </div>
         {adminView && (
@@ -104,132 +137,75 @@ export default function TicketDetail({ adminView = false }) {
         )}
       </header>
 
-      <div className="detail-grid">
-        <section className="card">
-          <h2>Ticket Information</h2>
-          <p>{ticket.description}</p>
-          <dl className="meta-list">
-            <div>
-              <dt>Created</dt>
-              <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt>SLA Deadline</dt>
-              <dd>{ticket.sla_deadline ? new Date(ticket.sla_deadline).toLocaleString() : '—'}</dd>
-            </div>
-            {adminView && (
-              <div>
-                <dt>Customer</dt>
-                <dd>{ticket.user_name}</dd>
-              </div>
-            )}
-          </dl>
-        </section>
-
-        {adminView && (
-          <section className="card ai-panel admin-ai-preview">
-            <h2>AI-Generated Response</h2>
-            <p className="section-desc muted">Initial automated reply (for admin reference)</p>
-            <div className="ai-response">{ticket.ai_response || 'No AI response generated.'}</div>
-          </section>
-        )}
-
-        {!adminView && (
-          <section className="card ai-panel">
-            <h2>Support Response</h2>
-            <p className="section-desc muted">AI-generated reply based on your request</p>
-            <div className="ai-response">{ticket.ai_response || 'No response generated.'}</div>
-          </section>
-        )}
-
-        {adminView && ticket.sources?.length > 0 && (
-          <section className="card sources-panel">
-            <h2>Reference Sources</h2>
-            <p className="section-desc muted">Documents used for AI grounding</p>
-            <ul className="source-list">
-              {ticket.sources.map((s) => (
-                <li key={s.id}>
-                  <strong>{s.filename}</strong>
-                  <span className="score">{(s.relevance_score * 100).toFixed(0)}% match</span>
-                  <p>{s.chunk_preview}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {!adminView && (
-          <section className="card sources-panel">
-            <h2>Reference Sources</h2>
-            <p className="section-desc muted">Internal documents used as grounding evidence</p>
-            {ticket.sources?.length ? (
-              <ul className="source-list">
-                {ticket.sources.map((s) => (
-                  <li key={s.id}>
-                    <strong>{s.filename}</strong>
-                    <span className="score">{(s.relevance_score * 100).toFixed(0)}% match</span>
-                    <p>{s.chunk_preview}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted">No relevant knowledge sources retrieved.</p>
-            )}
-          </section>
-        )}
-
-        <section className="card timeline-card timeline-card-wide">
-          <h2>Conversation</h2>
-          <p className="section-desc muted">
-            {adminView
-              ? 'Full thread visible to the customer. Send a manual reply below.'
-              : 'Messages from you, our AI, and support agents'}
-          </p>
-          <div className="timeline">
-            {ticket.messages?.length ? (
-              ticket.messages.map((m) => (
-                <div key={m.id} className={`timeline-item ${m.sender}`}>
-                  <div className="timeline-item-head">
-                    <span className="timeline-sender">{SENDER_LABELS[m.sender] || m.sender}</span>
-                    <small>{new Date(m.created_at).toLocaleString()}</small>
-                  </div>
-                  <div className="timeline-body">{formatMessageContent(m.content)}</div>
-                </div>
-              ))
-            ) : (
-              <p className="muted">No messages yet.</p>
+      <div className="chat-layout">
+        <aside className="chat-sidebar">
+          <div className="card chat-info-card">
+            <h3>About this request</h3>
+            <p className="chat-original-issue">{ticket.description}</p>
+            <p className="muted small">Opened {new Date(ticket.created_at).toLocaleString()}</p>
+            {adminView && ticket.user_name && (
+              <p className="chat-customer">
+                <strong>Customer:</strong> {ticket.user_name}
+              </p>
             )}
           </div>
 
-          {adminView && (
-            <form className="admin-reply-form" onSubmit={handleAdminReply}>
-              <h3>Reply to customer</h3>
+          {adminView && <SlaAdminPanel ticket={ticket} />}
+
+          <AiSourcesAccordion sources={ticket.sources} adminView={adminView} />
+        </aside>
+
+        <section className="chat-panel card">
+          <div className="chat-panel-head">
+            <h2>Support Conversation</h2>
+            <span className="muted small">
+              {isResolved ? 'This ticket is resolved' : 'Continue the conversation until your issue is fixed'}
+            </span>
+          </div>
+
+          <TicketChat messages={ticket.messages} adminView={adminView} />
+
+          {canReply ? (
+            <form className="chat-composer" onSubmit={handleSend}>
               <textarea
-                rows={5}
-                placeholder="Type your response to the customer..."
-                value={adminReply}
-                onChange={(e) => setAdminReply(e.target.value)}
-                required
-                minLength={5}
+                rows={3}
+                placeholder={
+                  adminView
+                    ? 'Type your reply to the customer...'
+                    : 'Ask a follow-up question or share more details...'
+                }
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                disabled={sending}
               />
-              <div className="admin-reply-actions">
-                <button type="submit" className="btn btn-primary" disabled={sending || !adminReply.trim()}>
-                  {sending ? 'Sending...' : 'Send reply'}
+              <div className="chat-composer-bar">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={sending || message.trim().length < (adminView ? 5 : 2)}
+                >
+                  {sending ? 'Sending...' : adminView ? 'Send reply' : 'Send message'}
                 </button>
-                <span className="muted small">Customer will see this in their ticket timeline</span>
               </div>
             </form>
+          ) : (
+            <div className="chat-composer chat-composer-disabled">
+              <p className="muted">
+                This ticket is resolved.{' '}
+                {!adminView && 'Create a new ticket if you need further assistance.'}
+              </p>
+            </div>
           )}
         </section>
       </div>
 
-      {!adminView && ticket.status === 'Resolved' && !ticket.feedback_rating && (
+      {!adminView && isResolved && !ticket.feedback_rating && (
         <section className="card feedback-card">
-          <h3>Rate this AI response</h3>
+          <h3>How was your support experience?</h3>
           <input type="range" min={1} max={5} value={rating} onChange={(e) => setRating(+e.target.value)} />
           <span>{rating}/5</span>
           <button className="btn btn-primary btn-sm" onClick={submitFeedback}>
-            Submit Feedback
+            Submit feedback
           </button>
         </section>
       )}

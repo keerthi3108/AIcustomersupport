@@ -14,6 +14,14 @@ class TicketUpdate(BaseModel):
     category: str | None = None
 
 
+class MessageRequest(BaseModel):
+    content: str = Field(min_length=2, max_length=5000)
+
+
+class AdminReplyRequest(MessageRequest):
+    content: str = Field(min_length=5, max_length=5000)
+
+
 class TicketMessageResponse(BaseModel):
     id: int
     sender: str
@@ -65,12 +73,9 @@ class TicketDetailResponse(TicketResponse):
     messages: list[TicketMessageResponse] = []
     sources: list[TicketSourceResponse] = []
     sla_status: str = "On Track"
+    sla_hours_remaining: float | None = None
     resolution_hours: float | None = None
     user_name: str | None = None
-
-
-class AdminReplyRequest(BaseModel):
-    content: str = Field(min_length=5, max_length=5000)
 
 
 class FeedbackRequest(BaseModel):

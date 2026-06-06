@@ -46,6 +46,8 @@ export const ticketApi = {
   },
   get: (id) => apiRequest(`/tickets/${id}`),
   update: (id, body) => apiRequest(`/tickets/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  sendMessage: (id, content) =>
+    apiRequest(`/tickets/${id}/messages`, { method: 'POST', body: JSON.stringify({ content }) }),
   reply: (id, content) =>
     apiRequest(`/tickets/${id}/reply`, { method: 'POST', body: JSON.stringify({ content }) }),
   feedback: (id, rating) =>
