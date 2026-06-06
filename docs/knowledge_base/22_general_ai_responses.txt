@@ -1,0 +1,2 @@
+SupportAI General - AI Responses
+Our RAG pipeline retrieves knowledge base chunks before generating answers with Gemini. Responses include source citations. If no relevant context is found, a safe fallback message is shown and a human agent is notified. Feedback ratings improve retrieval quality metrics.

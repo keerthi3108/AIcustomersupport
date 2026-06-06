@@ -1,0 +1,2 @@
+SupportAI Account - Email Change
+Change email in Profile Settings. You must confirm via link sent to the new address. Old email receives a security notification. API keys and webhooks remain tied to the organization, not the user email. Two-factor authentication must be re-verified after email change.

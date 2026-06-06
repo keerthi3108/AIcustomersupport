@@ -1,0 +1,2 @@
+SupportAI Technical - Data Export
+Export tickets and analytics from Reports > Export. Formats: CSV, JSON. GDPR full data export available under Privacy Settings; delivered within 30 days via secure download link. Exports include ticket metadata but redact PCI and HIPAA fields per compliance mode.

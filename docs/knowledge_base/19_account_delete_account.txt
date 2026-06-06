@@ -1,0 +1,2 @@
+SupportAI Account - Account Deletion
+Request deletion from Privacy Settings. Process completes in 14 days with cancellation option during grace period. All personal data is purged; organization data remains for other admins. Export your data before deletion. Billing subscriptions must be canceled first.

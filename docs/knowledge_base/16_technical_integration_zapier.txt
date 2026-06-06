@@ -1,0 +1,2 @@
+SupportAI Technical - Zapier Integration
+Connect via Zapier marketplace app. Triggers: new ticket, SLA breach. Actions: create ticket, update status. OAuth authorization required. Zapier tasks count against API rate limits. Recommended for no-code workflows between SupportAI and CRM tools.

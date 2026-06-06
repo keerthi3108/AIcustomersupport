@@ -1,0 +1,2 @@
+SupportAI Technical - SAML SSO
+Available on Enterprise plan. Upload IdP metadata XML in Admin > Security > SSO. Required attributes: email (NameID), firstName, lastName. Supported providers: Okta, Azure AD, Google Workspace. SP entity ID and ACS URL are shown in the setup wizard. Test connection before enforcing SSO-only login.

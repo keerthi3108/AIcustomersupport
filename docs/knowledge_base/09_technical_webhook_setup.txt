@@ -1,0 +1,2 @@
+SupportAI Technical - Webhook Setup
+Configure webhooks in Developer Settings. Supported events: ticket.created, ticket.resolved, sla.breached. Payloads are signed with HMAC-SHA256 using your webhook secret. Retry policy: 3 attempts over 24 hours. Endpoint must return 2xx within 10 seconds. Use ngrok for local testing.

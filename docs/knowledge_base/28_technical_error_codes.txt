@@ -1,0 +1,2 @@
+SupportAI Technical - Error Codes
+AUTH_001 invalid token. TICKET_404 not found. RATE_429 too many requests. RAG_EMPTY no context retrieved. Include X-Request-ID from response headers when contacting support for engineering escalation.

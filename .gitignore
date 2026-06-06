@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/logs/*
+!backend/logs/.gitkeep
+*.pyc
+.venv/
+venv/
+.DS_Store

@@ -1,0 +1,2 @@
+SupportAI Account - Session Management
+View active sessions under Security > Sessions. Revoke any unrecognized device. Sessions expire after 24 hours of inactivity. IP and user agent are logged for audit. Force logout all devices after password change.

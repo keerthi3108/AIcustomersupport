@@ -1,0 +1,2 @@
+SupportAI Account - Team Invites
+Admins invite members via Settings > Team. Roles: Admin, Agent, Viewer. Pending invites expire in 7 days. Seat limits depend on plan: Starter 3, Pro 10, Enterprise unlimited. Removing a user revokes API keys they created.

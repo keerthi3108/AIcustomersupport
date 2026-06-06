@@ -1,0 +1,2 @@
+SupportAI General - Knowledge Base
+Admins upload PDF, TXT, or MD files up to 10MB each. Documents are chunked and indexed for semantic search. Maximum recommended library size is 50 documents for optimal performance. AI responses cite source filenames. Rebuild vector index locally before production deploy.

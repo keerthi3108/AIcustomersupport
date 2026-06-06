@@ -1,0 +1,2 @@
+SupportAI General - Ticket Categories
+Tickets are auto-classified into Billing, Technical, Account, or General using AI. Classification accuracy is tracked in evaluation metrics. Admins may override category during ticket management. Category drives routing rules and analytics charts.

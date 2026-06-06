@@ -1,0 +1,2 @@
+SupportAI General - Sentiment Analysis
+Each ticket receives Positive, Neutral, or Negative sentiment via AI analysis. Sentiment appears on ticket details and analytics dashboards. Negative sentiment with High priority triggers escalation recommendations for agents.

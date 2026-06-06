@@ -1,0 +1,2 @@
+SupportAI Billing - Failed Payments
+When a card payment fails, we retry automatically on days 1, 3, and 5. Update your card under Settings > Billing > Payment Methods. Common decline codes: insufficient funds (call bank), expired card (add new card), and AVS mismatch (ensure billing address matches bank records). Service remains active for 72 hours after first failure on Pro plans.

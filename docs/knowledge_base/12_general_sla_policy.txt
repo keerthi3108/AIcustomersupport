@@ -1,0 +1,2 @@
+SupportAI General - SLA Policy
+High priority: first response within 4 hours, resolution target 24 hours. Medium: 8 hours / 48 hours. Low: 24 hours / 72 hours. Business hours are Mon-Fri 9am-6pm in your organization timezone. SLA breaches trigger escalation workflows and appear on the analytics dashboard.

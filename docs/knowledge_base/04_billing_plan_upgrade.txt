@@ -1,0 +1,2 @@
+SupportAI Billing - Plan Upgrades
+Upgrade anytime from Settings > Billing > Change Plan. Upgrades take effect immediately; we prorate unused time on your current plan. Downgrades apply at the next renewal cycle. Moving from Starter to Pro unlocks API access, advanced analytics, and 10 seat licenses. Annual billing saves 20% compared to monthly.

@@ -1,0 +1,2 @@
+SupportAI Account - Two-Factor Authentication
+Enable 2FA under Security Settings using authenticator apps (TOTP) or SMS where available. Backup codes are generated once—store them securely. If you lose your device, use a backup code or contact support with government ID verification for enterprise accounts. SSO users inherit MFA policies from their IdP.

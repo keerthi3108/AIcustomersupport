@@ -1,0 +1,2 @@
+SupportAI Account - Profile Settings
+Update display name, email, timezone, and notification preferences in Profile. Timezone affects SLA calculations and report timestamps. Email notifications: instant, digest daily, or off per event type.

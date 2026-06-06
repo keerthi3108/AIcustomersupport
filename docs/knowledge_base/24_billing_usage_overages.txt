@@ -1,0 +1,2 @@
+SupportAI Billing - Usage Overages
+API and AI token overages billed monthly at rates in your plan addendum. Usage dashboard shows current consumption. Alerts at 80% and 100% thresholds. Hard caps available on Enterprise to prevent unexpected charges.

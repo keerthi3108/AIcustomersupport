@@ -1,0 +1,2 @@
+SupportAI Technical - Mobile App
+iOS and Android apps sync with web in real time. Push notifications for ticket updates require enabling in device settings. Offline mode allows drafting tickets; sync on reconnect. Biometric login supported after initial password sign-in.

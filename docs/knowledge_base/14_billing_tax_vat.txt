@@ -1,0 +1,2 @@
+SupportAI Billing - Tax and VAT
+VAT is applied for EU customers with valid VAT ID entered at checkout (reverse charge may apply). US sales tax is calculated based on billing zip code. Update tax details in Billing Settings before renewal to avoid invoice corrections. Tax exemption certificates can be uploaded for qualified nonprofits.

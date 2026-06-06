@@ -1,0 +1,2 @@
+SupportAI Billing - Invoice Access
+Invoices are available in Settings > Billing > Invoice History. You can download PDF copies for the last 24 months. VAT and GST line items appear based on your billing country. If an invoice is missing, verify the payment succeeded and allow up to 24 hours for generation. Contact billing support with transaction ID PAY-XXXX for manual retrieval.

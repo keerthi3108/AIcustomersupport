@@ -1,0 +1,2 @@
+SupportAI General - Contact Support
+Submit tickets through the in-app portal for fastest routing. Emergency production outages: mark priority High and include error logs. Phone support is available for Enterprise customers 24/7. Community forum and documentation are at docs.supportai.io. Average first AI response is under 30 seconds.

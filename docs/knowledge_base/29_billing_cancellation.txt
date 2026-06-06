@@ -1,0 +1,2 @@
+SupportAI Billing - Cancellation
+Cancel subscription from Billing > Cancel Plan. Access continues until period end. No refund for partial months unless required by law. Reactivate within 90 days to restore historical ticket data. Export tickets before cancellation.

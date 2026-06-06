@@ -1,0 +1,2 @@
+SupportAI Technical - Browser Requirements
+Supported browsers: Chrome 100+, Firefox 100+, Safari 15+, Edge 100+. JavaScript and cookies must be enabled. Ad blockers may interfere with WebSocket real-time updates. Clear cache if dashboard widgets fail to load after releases.

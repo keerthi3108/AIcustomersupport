@@ -1,0 +1,2 @@
+SupportAI Technical - API Rate Limits
+Starter: 100 requests/minute. Pro: 500 requests/minute. Enterprise: custom limits. Rate limit headers: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset. Exceeding limits returns HTTP 429. Implement exponential backoff. Bulk export endpoints have separate daily quotas of 10,000 records.

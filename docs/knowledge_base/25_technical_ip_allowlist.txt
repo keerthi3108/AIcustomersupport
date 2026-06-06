@@ -1,0 +1,2 @@
+SupportAI Technical - IP Allowlist
+Enterprise feature: restrict admin and API access to CIDR ranges configured in Security settings. Changes propagate within 5 minutes. Ensure your office egress IPs are included before enabling enforcement.
